@@ -1,10 +1,9 @@
-## Token Introspection
+## Token Introspection API
 
-This API allows you to fetch metadata information such as permissions granted, token TTL etc., about the access token.
+This API allows you to fetch the metadata of your access token such as token status, ttl (time-to-live), the scope of permissions granted, and others.
 
-:::note
-You can use the Partner Dashboard for introspecting the token. You can go [here](https://www.google.co.in/) to do the same.
-:::
+> **Note**: 
+You can also use the Partner Dashboard for introspecting the token metadata. Read the [Partner Dashboard Documentation](https://www.google.co.in/) to learn more. 
 
 ## API Endpoint
 
@@ -12,15 +11,18 @@ You can use the Partner Dashboard for introspecting the token. You can go [here]
 
 ## Header 
 
-Use the following header with the POST request. This field is mandatory. 
+Use the following header with the POST request.  
 
-| ---- | ---- | 
-| Content-Type | `application/x-www-form-urlencoded` 
+| Header Name | Description | Required | 
+| ---- | ---- | ----- | 
+| Content-Type | Set this field to `application/x-www-form-urlencoded` | Mandatory | 
 
-## Request Body
 
-```shell
-{ token=<token_to_be_introspected>
+## Request 
+
+```
+{
+token=<token_to_be_introspected>
 &client_id=<client_id>
 &client_secret=<client_secret>
 }
@@ -28,18 +30,14 @@ Use the following header with the POST request. This field is mandatory.
 
 ## Request Parameters
 
-| Parameter | Data Type | Description | Required  
-| `client_id` | String | The unique client ID of your application. | Mandatory 
-| `client_secret` | String | The client secret of your application. | Mandatory 
-| `token` | String | The string value of the access token or refresh token returned from the token endpoint. | Mandatory  
+| Parameter | Data Type | Description | Required  |
+| --------- | -------- | ------- | ----- |
+| `client_id` | String | The unique Client ID of your application. | Mandatory |
+| `client_secret` | String | The Client Secret of your application. | Mandatory |
+| `token` | String | The access token or refresh token returned from the token endpoint. | Mandatory  |
 
 
-## Response 
-
-When the API call is successfully sent, you will recieve any of the following reponses based on your Token state. 
-The following responses are returned. 
-
-### Valid Token Response
+## Response
 
 ```json
 {
@@ -53,19 +51,22 @@ The following responses are returned.
 }
 ```
 
-## Response Parameter
+## Response Parameters
 
-| Parameter | Description | Required |
-| `active` | Boolean indicator of whether or not the presented token is currently active. | Mandatory
-| `status` | The status of your Token | Optional 
-| `scope` | A JSON string containing comma-separated list of scopes associated with this token | Optional 
-| `client_id`| Client identifier for the OAuth 2.0 client that requested this token. | No
-| `created_at` | Integer timestamp, measured in the number of seconds since January 1 1970 UTC, indicating when this token was originally issued | Optional 
-| `expires_at` | Integer timestamp, measured in the number of seconds since January 1 1970 UTC, indicating when this token will expire. | Optional 
-| `authorized_at` | Integer timestamp, measured in the number of seconds since January 1 1970 UTC, indicating when token was authorized. | Optional | 
+| Parameter | Data Type | Description |
+| ------- | ------- | ----- |
+| `active` | Boolean | The indicator of whether or not the presented token is currently active. Returned values are `true` or `false`. The value `false` is returned if the client credentials passed in the request do not match the client information in the access token. | 
+| `client_id`| String| Client identifier for the OAuth 2.0 client that requested this token. | 
+| `authorized_at` | Integer | The timestamp that indicates the time of token authorization. It is measured in the number of seconds since January 1, 1970 UTC. | 
+| `created_at` | Integer | The timestamp that indicates the time of token creation. It is measured in the number of seconds since January 1, 1970 UTC. | 
+| `expires_at` | Integer | The timestamp that indicates the time of token expiry. It is measured in the number of seconds since January 1, 1970 UTC.  | 
+| `status` | String | The status of your token. The token statuses that are returned are `active`, `expired`, or `revoked`. | 
+| `scope` | String | A list of comma-separated values of the scopes associated with this token.  |  
 
+## Error Codes
 
-
-
-
-
+| Error Code | Description |
+|----- | ------ | 
+| `HTTP 401 (Unauthorized)` | Returned when the client credentials passed in the request are not valid. Check your credentials and try again. |
+| `HTTP 401 (Unauthorized)` | Returned when the access token verification results in `member_restricted`. Check the member permissions and try again. |
+| `HTTP 429` | Returned when the app hits the fuse throttling for this endpoint. |
